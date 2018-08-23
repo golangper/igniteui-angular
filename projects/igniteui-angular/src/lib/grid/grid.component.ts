@@ -52,6 +52,7 @@ import { IgxGridRowComponent } from './row.component';
 import { DataUtil, IFilteringOperation, IFilteringExpressionsTree, FilteringExpressionsTree } from '../../public_api';
 import { IgxGridHeaderComponent } from './grid-header.component';
 import { IgxOverlayOutletDirective } from '../directives/toggle/toggle.directive';
+import { IgxTransactionService } from '../core/transaction';
 
 let NEXT_ID = 0;
 const DEBOUNCE_TIME = 16;
@@ -151,7 +152,8 @@ export interface IColumnMovingEndEventArgs {
     changeDetection: ChangeDetectionStrategy.OnPush,
     preserveWhitespaces: false,
     selector: 'igx-grid',
-    templateUrl: './grid.component.html'
+    templateUrl: './grid.component.html',
+    providers: [IgxTransactionService]
 })
 export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, AfterViewInit {
 

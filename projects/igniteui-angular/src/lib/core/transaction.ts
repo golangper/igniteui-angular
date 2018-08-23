@@ -1,4 +1,4 @@
-export class IgxUpdatingAPIService {
+export class IgxTransactionService {
     protected buffer: Map<any, any> = new Map<any, any>();
 
     public add(cellID, cellInfo) {

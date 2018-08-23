@@ -1,5 +1,4 @@
-﻿import { IgxUpdatingAPIService } from './../core/updating';
-import {
+﻿import {
     AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -15,6 +14,7 @@ import {
 } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { IgxSelectionAPIService } from '../core/selection';
+import { IgxTransactionService } from '../core/transaction';
 import { KEYCODES } from '../core/utils';
 import { DataType } from '../data-operations/data-util';
 import { IgxTextHighlightDirective } from '../directives/text-highlight/text-highlight.directive';
@@ -554,7 +554,7 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         public gridAPI: IgxGridAPIService,
         public selectionApi: IgxSelectionAPIService,
-        public updatingApi: IgxUpdatingAPIService,
+        public transactions: IgxTransactionService,
         public cdr: ChangeDetectorRef,
         private element: ElementRef) { }
 
@@ -660,7 +660,7 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     public update(val: any) {
         if (this.grid.rowEditable) {
-            this.updatingApi.add(this.cellID, {oldValue: this.value, newValue: val });
+            this.transactions.add(this.cellID, {oldValue: this.value, newValue: val });
         } else {
             const rowSelector = this.cellID.rowID;
             const editableCell = this.gridAPI.get_cell_inEditMode(this.gridID);
@@ -1057,7 +1057,7 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.column.editable) {
             if (this.inEditMode) {
                 if (this.grid.rowEditable) {
-                    this.updatingApi.add(this.cellID, { oldValue: this.value, value:  this.editValue });
+                    this.transactions.add(this.cellID, { oldValue: this.value, value:  this.editValue });
                 } else {
                     this.gridAPI.submit_value(this.gridID);
                 }

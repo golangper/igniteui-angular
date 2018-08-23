@@ -1,4 +1,3 @@
-import { IgxUpdatingAPIService } from './../core/updating';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -129,13 +128,13 @@ import { IgxColumnPinningModule } from './column-pinning.component';
     IgxButtonGroupModule,
     IgxColumnPinningModule
   ],
-  providers: [IgxGridAPIService, IgxSelectionAPIService, IgxUpdatingAPIService, IgxColumnMovingService]
+  providers: [IgxGridAPIService, IgxSelectionAPIService, IgxColumnMovingService]
 })
 export class IgxGridModule {
     public static forRoot() {
         return {
             ngModule: IgxGridModule,
-            providers: [IgxGridAPIService, IgxSelectionAPIService, IgxUpdatingAPIService, IgxColumnMovingService]
+            providers: [IgxGridAPIService, IgxSelectionAPIService, IgxColumnMovingService]
         };
     }
 }
