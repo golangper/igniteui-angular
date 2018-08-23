@@ -1,4 +1,5 @@
-﻿import {
+﻿import { IgxUpdatingAPIService } from './../core/updating';
+import {
     AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -300,6 +301,12 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
             this.gridAPI.escape_editMode(this.gridID, this.cellID);
         }
+        if (this.grid.rowEditable) {
+            this.row.inEditMode = value;
+        }
+        if (!value) {
+            this.grid.cellInEditMode = null;
+        }
 
         this.cdr.detectChanges();
     }
@@ -547,6 +554,7 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         public gridAPI: IgxGridAPIService,
         public selectionApi: IgxSelectionAPIService,
+        public updatingApi: IgxUpdatingAPIService,
         public cdr: ChangeDetectorRef,
         private element: ElementRef) { }
 
@@ -651,15 +659,19 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
      * @memberof IgxGridCellComponent
      */
     public update(val: any) {
-        const rowSelector = this.cellID.rowID;
-        const editableCell = this.gridAPI.get_cell_inEditMode(this.gridID);
-        if (editableCell && editableCell.cellID.rowID === this.cellID.rowID
-            && editableCell.cellID.columnID === this.cellID.columnID) {
-            this.gridAPI.escape_editMode(this.gridID, editableCell.cellID);
+        if (this.grid.rowEditable) {
+            this.updatingApi.add(this.cellID, {oldValue: this.value, newValue: val });
+        } else {
+            const rowSelector = this.cellID.rowID;
+            const editableCell = this.gridAPI.get_cell_inEditMode(this.gridID);
+            if (editableCell && editableCell.cellID.rowID === this.cellID.rowID
+                && editableCell.cellID.columnID === this.cellID.columnID) {
+                this.gridAPI.escape_editMode(this.gridID, editableCell.cellID);
+            }
+            this.gridAPI.update_cell(this.gridID, rowSelector, this.cellID.columnID, val);
+            this.cdr.markForCheck();
+            this.gridAPI.get(this.gridID).refreshSearch();
         }
-        this.gridAPI.update_cell(this.gridID, rowSelector, this.cellID.columnID, val);
-        this.cdr.markForCheck();
-        this.gridAPI.get(this.gridID).refreshSearch();
     }
 
     /**
@@ -699,7 +711,11 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     @HostListener('dblclick', ['$event'])
     public onDoubleClick(event) {
+        if (this.grid.cellInEditMode && this.cellID.rowID !== this.grid.cellInEditMode.rowID) {
+            return;
+        }
         if (this.column.editable) {
+            this.grid.cellInEditMode = this.cellID;
             this.focused = true;
             this.inEditMode = true;
         }
@@ -715,6 +731,9 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     @HostListener('click', ['$event'])
     public onClick(event) {
+        if (this.grid.cellInEditMode && this.cellID.rowID !== this.grid.cellInEditMode.rowID) {
+            return;
+        }
         this.grid.onCellClick.emit({
             cell: this,
             event
@@ -737,6 +756,9 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     @HostListener('focus', ['$event'])
     public onFocus(event) {
+        if (this.grid.cellInEditMode && this.cellID.rowID !== this.grid.cellInEditMode.rowID) {
+            return;
+        }
         this.isFocused = true;
         this.selected = true;
         const elementClassList = event.srcElement ? event.srcElement.classList : [];
@@ -1034,7 +1056,11 @@ export class IgxGridCellComponent implements OnInit, OnDestroy, AfterViewInit {
     public onKeydownEnterEditMode() {
         if (this.column.editable) {
             if (this.inEditMode) {
-                this.gridAPI.submit_value(this.gridID);
+                if (this.grid.rowEditable) {
+                    this.updatingApi.add(this.cellID, { oldValue: this.value, value:  this.editValue });
+                } else {
+                    this.gridAPI.submit_value(this.gridID);
+                }
             } else {
                 this.focused = true;
                 this.inEditMode = true;

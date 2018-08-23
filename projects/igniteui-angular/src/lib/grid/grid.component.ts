@@ -83,6 +83,11 @@ export interface IRowDataEventArgs {
     data: any;
 }
 
+export interface IRowUpdateDataEventArgs {
+    oldData: any;
+    data: any;
+}
+
 export interface IColumnResizeEventArgs {
     column: IgxColumnComponent;
     prevWidth: string;
@@ -612,6 +617,30 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
     }
 
     /**
+     * Sets whether the `IgxGridRowComponent` is editable.
+     * By default it is set to false.
+     * ```typescript
+     * let rowEditable = this.grid.rowEditable;
+     * ```
+	 * @memberof IgxGridComponent
+     */
+    @Input()
+    get rowEditable(): boolean {
+        return this._rowEditable;
+    }
+
+    /**
+     * Sets whether rows can be edited.
+     * ```html
+     * <igx-grid #grid [showToolbar]="true" [rowEditable]="true" [columnHiding]="true"></igx-grid>
+     * ```
+	 * @memberof IgxGridComponent
+     */
+    set rowEditable(val: boolean) {
+        this._rowEditable = val;
+    }
+
+    /**
      * Returns the height of the `IgxGridComponent`.
      * ```typescript
      * let gridHeight = this.grid.height;
@@ -903,6 +932,22 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
      */
     @Output()
     public onRowSelectionChange = new EventEmitter<IRowSelectionEventArgs>();
+
+    /**
+     * Emitted when a `IgxGridRowComponent` is being updated to the `IgxGridComponent` through the UI and API.
+     * Returns the data for the updated `IgxGridRowComponent` object.
+     * ```typescript
+     * rowUpdated(event: IRowUpdateDataEventArgs){
+     *    const rowInfo = event;
+     * }
+     * ```
+     * ```html
+     * <igx-grid #grid [data]="localData" (onRowUpdated)="rowUpdated($event)" [height]="'305px'" [autoGenerate]="true"></igx-grid>
+     * ```
+	 * @memberof IgxGridComponent
+     */
+    @Output()
+    public onRowUpdated = new EventEmitter<IRowUpdateDataEventArgs>();
 
     /**
      * Emitted when `IgxColumnComponent` is pinned.
@@ -1536,6 +1581,7 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
      * @hidden
     */
     public columnsWithNoSetWidths = null;
+    public cellInEditMode = null;
 
     /* Toolbar related definitions */
     private _showToolbar = false;
@@ -1771,6 +1817,12 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
         }
     }
 
+    @Input()
+    public buttonDoneTemplate;
+
+    @Input()
+    public buttonCancelTemplate;
+
     /**
      * Emitted when an export process is initiated by the user.
      * ```typescript
@@ -1869,6 +1921,10 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
      * @hidden
      */
     protected _rowSelection = false;
+    /**
+     * @hidden
+     */
+    protected _rowEditable = false;
     /**
      * @hidden
      */

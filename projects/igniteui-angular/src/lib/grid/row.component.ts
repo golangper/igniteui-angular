@@ -1,3 +1,5 @@
+import { IgxToggleDirective } from './../directives/toggle/toggle.directive';
+import { IgxUpdatingAPIService } from './../core/updating';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -21,6 +23,7 @@ import { IgxGridAPIService } from './api.service';
 import { IgxGridCellComponent } from './cell.component';
 import { IgxColumnComponent } from './column.component';
 import { IgxGridComponent, IRowSelectionEventArgs } from './grid.component';
+import { OverlaySettings, AbsoluteScrollStrategy, ConnectedPositioningStrategy, HorizontalAlignment, VerticalAlignment } from '../services';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +33,7 @@ import { IgxGridComponent, IRowSelectionEventArgs } from './grid.component';
 })
 export class IgxGridRowComponent implements DoCheck {
 
+    private _inEditMode = false;
     /**
      *  The data passed to the row component.
      *
@@ -81,6 +85,9 @@ export class IgxGridRowComponent implements DoCheck {
     @ViewChildren(forwardRef(() => IgxGridCellComponent), { read: IgxGridCellComponent })
     public cells: QueryList<IgxGridCellComponent>;
 
+
+    @ViewChild(IgxToggleDirective)
+    public buttons: IgxToggleDirective;
     /**
      * @hidden
      */
@@ -108,7 +115,8 @@ export class IgxGridRowComponent implements DoCheck {
     get styleClasses(): string {
         const indexClass = this.index % 2 ? this.grid.evenRowCSS : this.grid.oddRowCSS;
         const selectedClass = this.isSelected ? 'igx-grid__tr--selected' : '';
-        return `${this.defaultCssClass} ${indexClass} ${selectedClass}`;
+        const dirtyClass = this.isDirty ? 'igx-grid__tr--dirty' : '';
+        return `${this.defaultCssClass} ${indexClass} ${selectedClass} ${dirtyClass}`;
     }
 
 
@@ -159,6 +167,43 @@ export class IgxGridRowComponent implements DoCheck {
      */
     @HostBinding('attr.aria-selected')
     public isSelected: boolean;
+
+    /**
+     * @hidden
+     */
+    @HostBinding('attr.aria-dirty')
+    public get inEditMode(): boolean {
+        return this._inEditMode;
+    }
+
+    public set inEditMode(value: boolean) {
+        this._inEditMode = value;
+        const overlaySettings: OverlaySettings = {
+            scrollStrategy: new AbsoluteScrollStrategy(),
+            modal: false,
+            closeOnOutsideClick: false,
+            positionStrategy: new ConnectedPositioningStrategy({
+                target: this.element.nativeElement,
+                horizontalDirection: HorizontalAlignment.Left,
+                verticalDirection: VerticalAlignment.Bottom,
+                horizontalStartPoint: HorizontalAlignment.Right,
+                verticalStartPoint: VerticalAlignment.Bottom
+            })
+        };
+        if (value) {
+            this.buttons.open(overlaySettings);
+        } else {
+            this.buttons.close();
+        }
+    }
+
+    /**
+     * @hidden
+     */
+    @HostBinding('attr.aria-dirty')
+    public get isDirty(): boolean {
+        return !this.updatingAPI.isEmpty() && this.updatingAPI.first()[0].rowID === this.rowID;
+    }
 
     /**
      * Get a reference to the grid that contains the selected row.
@@ -221,6 +266,7 @@ export class IgxGridRowComponent implements DoCheck {
 
     constructor(public gridAPI: IgxGridAPIService,
                 private selectionAPI: IgxSelectionAPIService,
+                private updatingAPI: IgxUpdatingAPIService,
                 public element: ElementRef,
                 public cdr: ChangeDetectorRef) { }
 
@@ -346,5 +392,21 @@ export class IgxGridRowComponent implements DoCheck {
      */
     notGroups(arr) {
         return arr.filter(c => !c.columnGroup);
+    }
+
+    public updateRow(event) {
+        this.updatingAPI.get();
+        this.gridAPI.submit_value(this.gridID);
+        this.updatingAPI.clear();
+        this.inEditMode = false;
+        this.cells.forEach(cell => cell.inEditMode = false);
+        this.cdr.detectChanges();
+    }
+
+    public resetRow(event) {
+        this.updatingAPI.clear();
+        this.inEditMode = false;
+        this.cells.forEach(cell => cell.inEditMode = false);
+        this.cdr.detectChanges();
     }
 }

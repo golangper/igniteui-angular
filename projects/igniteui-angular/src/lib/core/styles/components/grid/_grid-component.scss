@@ -90,6 +90,14 @@
         @extend %grid-row--selected !optional;
     }
 
+    @include e(tr, $m: dirty) {
+        @extend %grid-row--dirty !optional;
+    }
+
+    @include e(tr, $m: updatingButtons) {
+        @extend %grid-row__updating-buttons !optional;
+    }
+
     @include e(tr, $m: group) {
         @extend %grid-row--group !optional;
     }
