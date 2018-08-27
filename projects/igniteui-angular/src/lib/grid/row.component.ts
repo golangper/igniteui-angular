@@ -1,4 +1,4 @@
-import { IgxTransactionService } from '../core/transaction';
+import { IgxTransactionService } from '../services/transactions/transaction';
 import { IgxToggleDirective } from './../directives/toggle/toggle.directive';
 import {
     ChangeDetectionStrategy,
@@ -115,8 +115,8 @@ export class IgxGridRowComponent implements DoCheck {
     get styleClasses(): string {
         const indexClass = this.index % 2 ? this.grid.evenRowCSS : this.grid.oddRowCSS;
         const selectedClass = this.isSelected ? 'igx-grid__tr--selected' : '';
-        const dirtyClass = this.isDirty ? 'igx-grid__tr--dirty' : '';
-        return `${this.defaultCssClass} ${indexClass} ${selectedClass} ${dirtyClass}`;
+        // const dirtyClass = this.isDirty ? 'igx-grid__tr--dirty' : '';
+        return `${this.defaultCssClass} ${indexClass} ${selectedClass}`;
     }
 
 
@@ -201,9 +201,9 @@ export class IgxGridRowComponent implements DoCheck {
      * @hidden
      */
     @HostBinding('attr.aria-dirty')
-    public get isDirty(): boolean {
-        return !this.transactions.isEmpty() && this.transactions.first()[0].rowID === this.rowID;
-    }
+    /*public get isDirty(): boolean {
+        // return !this.transactions.isEmpty; // && this.transactions.first()[0].rowID === this.rowID;
+    }*/
 
     /**
      * Get a reference to the grid that contains the selected row.
@@ -395,18 +395,18 @@ export class IgxGridRowComponent implements DoCheck {
     }
 
     public updateRow(event) {
-        this.transactions.get();
+        /*this.transactions.getAll();
         this.gridAPI.submit_value(this.gridID);
-        this.transactions.clear();
+        this.transactions.reset();
         this.inEditMode = false;
         this.cells.forEach(cell => cell.inEditMode = false);
-        this.cdr.detectChanges();
+        this.cdr.detectChanges();*/
     }
 
     public resetRow(event) {
-        this.transactions.clear();
+        /*this.transactions.reset();
         this.inEditMode = false;
         this.cells.forEach(cell => cell.inEditMode = false);
-        this.cdr.detectChanges();
+        this.cdr.detectChanges();*/
     }
 }

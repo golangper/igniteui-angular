@@ -52,7 +52,7 @@ import { IgxGridRowComponent } from './row.component';
 import { DataUtil, IFilteringOperation, IFilteringExpressionsTree, FilteringExpressionsTree } from '../../public_api';
 import { IgxGridHeaderComponent } from './grid-header.component';
 import { IgxOverlayOutletDirective } from '../directives/toggle/toggle.directive';
-import { IgxTransactionService } from '../core/transaction';
+import { IgxTransactionService } from '../services/transactions/transaction';
 
 let NEXT_ID = 0;
 const DEBOUNCE_TIME = 16;
