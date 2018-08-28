@@ -52,6 +52,8 @@ import { IgxGridRowComponent } from './row.component';
 import { DataUtil, IFilteringOperation, IFilteringExpressionsTree, FilteringExpressionsTree } from '../../public_api';
 import { IgxGridHeaderComponent } from './grid-header.component';
 import { IgxOverlayOutletDirective } from '../directives/toggle/toggle.directive';
+import { IgxTransactionService } from './../services/transactions/transaction';
+import { IgxGridTransactionService } from './../services/transactions/grid-transactions/grid-transactions';
 
 let NEXT_ID = 0;
 const DEBOUNCE_TIME = 16;
@@ -149,6 +151,8 @@ export interface IColumnMovingEndEventArgs {
     templateUrl: './grid.component.html'
 })
 export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, AfterViewInit {
+    @Input()
+    public transactions = false;
 
     /**
      * An @Input property that lets you fill the `IgxGridComponent` with an array of data.
@@ -1946,7 +1950,9 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
         public cdr: ChangeDetectorRef,
         private resolver: ComponentFactoryResolver,
         private differs: IterableDiffers,
-        private viewRef: ViewContainerRef) {
+        private viewRef: ViewContainerRef,
+        @Inject(IgxGridTransactionService) public gridTransactions: IgxGridTransactionService,
+        @Inject(IgxTransactionService) public transactionsService: IgxTransactionService) {
 
         this.resizeHandler = () => {
             this.calculateGridSizes();

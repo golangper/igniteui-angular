@@ -29,6 +29,7 @@ import { IgxGridComponent, IRowSelectionEventArgs } from './grid.component';
     templateUrl: './row.component.html'
 })
 export class IgxGridRowComponent implements DoCheck {
+    private _rowData: any;
 
     /**
      *  The data passed to the row component.
@@ -38,8 +39,19 @@ export class IgxGridRowComponent implements DoCheck {
      * let selectedRowData = this.grid.selectedRows[0].rowData;
      * ```
      */
+    public get rowData() {
+        if (this.grid && this.grid.transactions) {
+            const rowTransactionState = this.grid.gridTransactions.getRowTransactionByID(this.rowID);
+            if (rowTransactionState) {
+                return Object.assign({}, this._rowData, rowTransactionState.cells);
+            }
+        }
+        return this._rowData;
+    }
     @Input()
-    public rowData: any;
+    public set rowData(value) {
+        this._rowData = value;
+    }
 
     /**
      * The index of the row.
@@ -189,7 +201,7 @@ export class IgxGridRowComponent implements DoCheck {
         // primaryKey data value,
         // or if the primaryKey is omitted, then the whole rowData is used instead.
         const primaryKey = this.grid.primaryKey;
-        return primaryKey ? this.rowData[primaryKey] : this.rowData;
+        return primaryKey ? this._rowData[primaryKey] : this._rowData;
     }
 
     /**

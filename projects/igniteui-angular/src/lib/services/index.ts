@@ -12,3 +12,5 @@ export {
     OverlayEventArgs, OverlaySettings, PositionSettings
 } from './overlay/utilities';
 export * from './overlay/scroll';
+export * from './transactions/transaction';
+export * from './transactions/grid-transactions/grid-transactions';

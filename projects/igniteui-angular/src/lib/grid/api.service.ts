@@ -11,6 +11,8 @@ import { IgxColumnComponent } from './column.component';
 import { IGridEditEventArgs, IgxGridComponent } from './grid.component';
 import { IgxGridRowComponent } from './row.component';
 import { IFilteringOperation, FilteringExpressionsTree, IFilteringExpressionsTree } from '../../public_api';
+import { IgxTransactionService, TransactionType } from './../services/transactions/transaction';
+import { IgxGridTransactionService } from './../services/transactions/grid-transactions/grid-transactions';
 /**
  *@hidden
  */
@@ -178,7 +180,17 @@ export class IgxGridAPIService {
                 currentValue: grid.data[rowIndex][column.field], newValue: editValue
             };
             grid.onEditDone.emit(args);
-            grid.data[rowIndex][column.field] = args.newValue;
+            if (grid.transactions) {
+                grid.gridTransactions.add({
+                    id: editableCell.cellID,
+                    context: editableCell.cell,
+                    type: TransactionType.UPDATE,
+                    newValue: args.newValue,
+                    oldValue: args.currentValue
+                });
+            } else {
+                grid.data[rowIndex][column.field] = args.newValue;
+            }
             if (grid.primaryKey === column.field && isRowSelected) {
                 grid.selectionAPI.set_selection(id, grid.selectionAPI.deselect_item(id, rowID));
                 grid.selectionAPI.set_selection(id, grid.selectionAPI.select_item(id, args.newValue));
