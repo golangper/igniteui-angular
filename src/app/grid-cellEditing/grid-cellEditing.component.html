@@ -7,7 +7,7 @@
     (onEditDone)="editDone($event)" (onRowAdded)="onRowAdded($event)" (onRowUpdated)="onRowUpdated($event)">
     <igx-column [pinned]="true">
         <ng-template igxCell let-cell="cell" let-val >
-            <button (click)="deleteRow(cell.cellID.rowID)">Delete</button>
+            <button (click)="deleteRow($event, cell.cellID.rowID)">Delete</button>
             <button (click)="updateRow(cell.cellID.rowID)">Update</button>
         </ng-template>
     </igx-column>
@@ -32,9 +32,10 @@
 <button (click)="updateCell()">Update Cell</button>
 <button (click)="pin()">Pin/Unpin</button>
 <button (click)="hideColumn()">Hide/Show OrderDate</button>
+<button (click)="updateSpecificRow()">Update Row by ID</button>
 
 <h3>Grid without PK</h3>
-<igx-grid #grid [data]="dataWithoutPK" [displayDensity]="'compact'" width="800px" height="550px" [paging]="true">
+<igx-grid #grid [data]="dataWithoutPK" [displayDensity]="'compact'" width="800px" height="550px" [paging]="true" [rowSelectable]="true">
     <igx-column [pinned]="true">
         <ng-template igxCell let-cell="cell" let-val >
             <button (click)="deleteRowbyIndex(cell.cellID.rowIndex)">Delete</button>
