@@ -1,4 +1,4 @@
-import { IgxTransactionService } from '../core/transaction';
+import { IgxComplexTransaction, TransactionType } from '../core/transaction';
 import { IgxToggleDirective } from './../directives/toggle/toggle.directive';
 import {
     ChangeDetectionStrategy,
@@ -202,7 +202,7 @@ export class IgxGridRowComponent implements DoCheck {
      */
     @HostBinding('attr.aria-dirty')
     public get isDirty(): boolean {
-        return !this.transactions.isEmpty() && this.transactions.first()[0].rowID === this.rowID;
+        return this.transactions.dirty(this.rowID);
     }
 
     /**
@@ -266,7 +266,7 @@ export class IgxGridRowComponent implements DoCheck {
 
     constructor(public gridAPI: IgxGridAPIService,
                 private selectionAPI: IgxSelectionAPIService,
-                private transactions: IgxTransactionService,
+                private transactions: IgxComplexTransaction,
                 public element: ElementRef,
                 public cdr: ChangeDetectorRef) { }
 
@@ -362,6 +362,7 @@ export class IgxGridRowComponent implements DoCheck {
             if (grid.data.length % grid.perPage === 0 && grid.isLastPage && grid.page !== 0) {
                 grid.page--;
             }
+            this.transactions.add(this.rowID, TransactionType.DELETE, null);
         }
     }
 
@@ -395,16 +396,15 @@ export class IgxGridRowComponent implements DoCheck {
     }
 
     public updateRow(event) {
-        this.transactions.get();
         this.gridAPI.submit_value(this.gridID);
-        this.transactions.clear();
+        this.transactions.reset();
         this.inEditMode = false;
         this.cells.forEach(cell => cell.inEditMode = false);
         this.cdr.detectChanges();
     }
 
     public resetRow(event) {
-        this.transactions.clear();
+        this.transactions.reset();
         this.inEditMode = false;
         this.cells.forEach(cell => cell.inEditMode = false);
         this.cdr.detectChanges();

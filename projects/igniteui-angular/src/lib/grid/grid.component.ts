@@ -52,7 +52,7 @@ import { IgxGridRowComponent } from './row.component';
 import { DataUtil, IFilteringOperation, IFilteringExpressionsTree, FilteringExpressionsTree } from '../../public_api';
 import { IgxGridHeaderComponent } from './grid-header.component';
 import { IgxOverlayOutletDirective } from '../directives/toggle/toggle.directive';
-import { IgxTransactionService } from '../core/transaction';
+import { IgxComplexTransaction, TransactionType } from '../core/transaction';
 
 let NEXT_ID = 0;
 const DEBOUNCE_TIME = 16;
@@ -153,7 +153,7 @@ export interface IColumnMovingEndEventArgs {
     preserveWhitespaces: false,
     selector: 'igx-grid',
     templateUrl: './grid.component.html',
-    providers: [IgxTransactionService]
+    providers: [IgxComplexTransaction]
 })
 export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, AfterViewInit {
 
@@ -1998,6 +1998,7 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
     constructor(
         private gridAPI: IgxGridAPIService,
         public selectionAPI: IgxSelectionAPIService,
+        private transactions: IgxComplexTransaction,
         private elementRef: ElementRef,
         private zone: NgZone,
         @Inject(DOCUMENT) public document,
@@ -2681,6 +2682,7 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
                 if (this.data.length % this.perPage === 0 && this.isLastPage && this.page !== 0) {
                     this.page--;
                 }
+                this.transactions.add(row.rowID, TransactionType.DELETE, null);
             }
         }
     }
