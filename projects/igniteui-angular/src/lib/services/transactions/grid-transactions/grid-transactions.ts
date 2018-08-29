@@ -1,39 +1,56 @@
-import { IgxTransactionService, TransactionState, TransactionType } from './../transaction';
+import { IgxTransactionService, Transaction, TransactionType } from './../transaction';
 
 export interface RowTransactionState {
+    type: TransactionType;
     rowID: any;
     cells: {};
 }
 
-export interface CellTransactionState {
-    cellID: any;
-    currentValue;
-}
-
 export class IgxGridTransactionService extends IgxTransactionService {
-    private _gridTransactions: RowTransactionState[] = [];
+    private _gridTransactions: Map<any, RowTransactionState> = new Map();
 
-    public add(state: TransactionState) {
+    public add(transaction: Transaction) {
         let rowID;
-        super.add(state);
+        super.add(transaction);
 
-        switch (state.type) {
+        switch (transaction.type) {
             case TransactionType.UPDATE:
-                rowID = state.id.rowID;
-                let row = this._gridTransactions[rowID];
-
-                if (!row) {
-                    this._gridTransactions[rowID] = { rowID: rowID, cells: {} };
-                    row = this._gridTransactions[rowID];
+                rowID = transaction.id.rowID;
+                if (!this._gridTransactions.has(transaction.id.rowID)) {
+                    this._gridTransactions.set(transaction.id.rowID, { type: transaction.type, rowID: rowID, cells: {} });
                 }
 
-                row.cells[state.context.column.field] = state.newValue;
-
+                const rowTransactionState = this._gridTransactions.get(rowID);
+                if (rowTransactionState.type !== TransactionType.DELETE) {
+                    this._gridTransactions.get(rowID).cells[transaction.context.column.field] = transaction.newValue;
+                }
+                break;
+            case TransactionType.DELETE:
+                this._gridTransactions.set(transaction.id, {type: transaction.type, rowID: transaction.id, cells: null});
                 break;
         }
     }
 
-    public getRowTransactionByID(id: string) {
-        return this._gridTransactions[id];
+    public getRowTransactionStateByID(id: string): RowTransactionState {
+        return this._gridTransactions.get(id);
+    }
+
+    public getRowTransactionStates(): Map<any, RowTransactionState> {
+        return this._gridTransactions;
+    }
+
+    public delete(id) {
+        const transaction = super.get(id);
+        if (transaction) {
+            const rowTransactionState = this.getRowTransactionStateByID(transaction.id);
+            rowTransactionState.cells[transaction.context.column.field] = transaction.oldValue;
+        }
+
+        super.delete(id);
+    }
+
+    public reset() {
+        super.reset();
+        this._gridTransactions = new Map();
     }
 }

@@ -52,8 +52,8 @@ import { IgxGridRowComponent } from './row.component';
 import { DataUtil, IFilteringOperation, IFilteringExpressionsTree, FilteringExpressionsTree } from '../../public_api';
 import { IgxGridHeaderComponent } from './grid-header.component';
 import { IgxOverlayOutletDirective } from '../directives/toggle/toggle.directive';
-import { IgxTransactionService } from './../services/transactions/transaction';
-import { IgxGridTransactionService } from './../services/transactions/grid-transactions/grid-transactions';
+import { IgxTransactionService, TransactionType } from './../services/transactions/transaction';
+import { IgxGridTransactionService, RowTransactionState } from './../services/transactions/grid-transactions/grid-transactions';
 
 let NEXT_ID = 0;
 const DEBOUNCE_TIME = 16;
@@ -2617,7 +2617,17 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
                     this.gridAPI.escape_editMode(this.id, editableCell.cellID);
                 }
                 this.onRowDeleted.emit({ data: this.data[index] });
-                this.data.splice(index, 1);
+                if (this.transactions) {
+                    this.gridTransactions.add({
+                        id: rowSelector,
+                        context: this.getRowByIndex(index),
+                        type: TransactionType.DELETE,
+                        newValue: null,
+                        oldValue: this.data[index]
+                    });
+                } else {
+                    this.data.splice(index, 1);
+                }
                 if (this.rowSelectable === true && this.selectionAPI.is_item_selected(this.id, rowSelector)) {
                     this.deselectRows([rowSelector]);
                 } else {
@@ -4447,5 +4457,30 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
         event.preventDefault();
         this.verticalScrollContainer.scrollPrevPage();
         this.nativeElement.focus();
+    }
+
+    public UpdateData(): void {
+        if (!this.primaryKey || !this.transactions) {
+            return;
+        }
+
+        const rowTransactionStates = this.gridTransactions.getRowTransactionStates();
+        if (rowTransactionStates) {
+            const deleted = [];
+            rowTransactionStates.forEach(( rowTransactionState: RowTransactionState, rowId) => {
+                const rowIndex = this.getRowByKey(rowId).index;
+                switch (rowTransactionState.type) {
+                    case TransactionType.UPDATE:
+                        this.data[rowIndex] = Object.assign({}, this.data[rowIndex], rowTransactionState.cells);
+                        break;
+                    case TransactionType.DELETE:
+                        deleted.push(rowIndex);
+                }
+            });
+            deleted.sort().reverse().forEach(i => this.data.slice(i, 1));
+    }
+
+        this.gridTransactions.reset();
+        this.cdr.markForCheck();
     }
 }

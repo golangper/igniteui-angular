@@ -1,4 +1,4 @@
-import { IgxTransactionService, TransactionType, TransactionState } from './transaction';
+import { IgxTransactionService, TransactionType, Transaction } from './transaction';
 
 import { async, TestBed, ComponentFixture, tick, fakeAsync, flush } from '@angular/core/testing';
 
@@ -14,7 +14,7 @@ fdescribe('Transactions', () => {
         it('API', fakeAsync(() => {
             const trans = new IgxTransactionService();
             expect(trans).toBeDefined();
-            let state: TransactionState = { id: '1', type: TransactionType.UPDATE, oldValue: 0, newValue: 1 };
+            let state: Transaction = { id: '1', type: TransactionType.UPDATE, oldValue: 0, newValue: 1 };
             trans.add(state);
             expect(trans.get('1')).toEqual(state);
 

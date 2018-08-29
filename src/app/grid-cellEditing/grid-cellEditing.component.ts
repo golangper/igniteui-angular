@@ -25,7 +25,7 @@ export class GridCellEditingComponent {
     constructor() {
         const date = new Date();
         this.data = data;
-        this.dataWithoutPK = dataWithoutPK;
+        this.dataWithoutPK = data;
         this.displayDensities = [
             { label: 'compact', selected: this.density === 'compact', togglable: true },
             { label: 'cosy', selected: this.density === 'cosy', togglable: true },
@@ -151,5 +151,9 @@ export class GridCellEditingComponent {
 
     public selectDensity(event) {
         this.density = this.displayDensities[event.index].label;
+    }
+
+    public updateGridData() {
+        this.gridWithPK.UpdateData();
     }
 }

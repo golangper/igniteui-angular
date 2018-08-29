@@ -1,4 +1,4 @@
-import { TransactionState } from './transaction';
+import { Transaction } from './transaction';
 
 export enum TransactionType {
     ADD = 'add',
@@ -6,7 +6,7 @@ export enum TransactionType {
     UPDATE = 'update'
 }
 
-export interface TransactionState {
+export interface Transaction {
     id: any;
     context: any;
     type: TransactionType;
@@ -14,34 +14,29 @@ export interface TransactionState {
     oldValue: any;
 }
 
-export interface GridTransactionState {
-    type: TransactionType;
-    state: object;
-    previousState: object;
-}
-export interface UndoRedoState {
-    id: any;
-    state: TransactionState;
-}
-
 export class IgxTransactionService {
-    private _transactions: TransactionState[] = [];
+    private _transactions: Transaction[] = [];
 
-    public add(state: TransactionState) {
-        this._transactions.push(state);
+    public add(transaction: Transaction) {
+        this._transactions.push(transaction);
     }
 
-    public get(id?: string) {
+    public get(id: string): Transaction {
         if (id) {
-            return [...this._transactions].reverse().find(transaction => transaction.id === id);
+            return [...this._transactions].reverse().find(t => t.id === id);
         } else {
-            return [...this._transactions];
+            return null;
         }
     }
 
+    public getAll(): Transaction[] {
+        return [...this._transactions];
+    }
+
     public delete(id) {
-        const index = this._transactions.length - [...this._transactions].reverse().findIndex(transaction => transaction.id === id) - 1;
-        this._transactions = [...this._transactions.slice(0, index), ...this._transactions.slice(index + 1, this._transactions.length - 1)];
+        const index = this._transactions.length - [...this._transactions].reverse().findIndex(t => t.id === id) - 1;
+    // this._transactions = [...this._transactions.slice(0, index), ...this._transactions.slice(index + 1, this._transactions.length - 1)];
+        this._transactions = this._transactions.splice(index, 1);
     }
 
     public reset() {

@@ -40,8 +40,8 @@ export class IgxGridRowComponent implements DoCheck {
      * ```
      */
     public get rowData() {
-        if (this.grid && this.grid.transactions) {
-            const rowTransactionState = this.grid.gridTransactions.getRowTransactionByID(this.rowID);
+        if (this.grid.primaryKey && this.grid.transactions) {
+            const rowTransactionState = this.grid.gridTransactions.getRowTransactionStateByID(this.rowID);
             if (rowTransactionState) {
                 return Object.assign({}, this._rowData, rowTransactionState.cells);
             }
@@ -296,8 +296,8 @@ export class IgxGridRowComponent implements DoCheck {
         if (editableCell && editableCell.cellID.rowID === this.rowID) {
             this.gridAPI.escape_editMode(this.gridID, editableCell.cellID);
         }
-        const index = this.grid.data.indexOf(this.rowData);
-        this.grid.onRowDeleted.emit({ data: this.rowData });
+        const index = this.grid.data.indexOf(this._rowData);
+        this.grid.onRowDeleted.emit({ data: this._rowData });
         this.grid.data.splice(index, 1);
         if (this.grid.rowSelectable === true && this.isSelected) {
             this.grid.deselectRows([this.rowID]);
