@@ -43,7 +43,7 @@ export class IgxGridRowComponent implements DoCheck {
         if (this.grid.primaryKey && this.grid.transactions) {
             const rowTransactionState = this.grid.gridTransactions.getRowTransactionStateByID(this.rowID);
             if (rowTransactionState) {
-                return Object.assign({}, this._rowData, rowTransactionState.cells);
+                return Object.assign({}, this._rowData, rowTransactionState.value);
             }
         }
         return this._rowData;

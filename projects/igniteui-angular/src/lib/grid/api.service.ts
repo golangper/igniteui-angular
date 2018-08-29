@@ -177,8 +177,8 @@ export class IgxGridAPIService {
         let currentValue: any;
         if (grid.primaryKey && grid.transactions) {
             const rowTransactionState = grid.gridTransactions.getRowTransactionStateByID(rowID);
-            if (rowTransactionState && rowTransactionState.cells) {
-                currentValue = rowTransactionState.cells[column.field];
+            if (rowTransactionState && rowTransactionState.value) {
+                currentValue = rowTransactionState.value[column.field];
             }
         }
 
@@ -192,12 +192,18 @@ export class IgxGridAPIService {
             };
             grid.onEditDone.emit(args);
             if (grid.transactions && currentValue !== editValue) {
-                grid.gridTransactions.add({
-                    id: editableCell.cellID,
-                    context: editableCell.cell,
-                    type: TransactionType.UPDATE,
-                    newValue: args.newValue,
-                    oldValue: args.currentValue
+                const rowValue = (<any>grid.getRowByIndex(rowIndex))._rowData;
+                const columnField = editableCell.cell.column.field;
+                const cellNewValue = {};
+                cellNewValue[columnField] = editValue;
+                grid.gridTransactions.addGridTransaction({
+                    transaction:
+                    {
+                        id: editableCell.cellID.rowID,
+                        type: TransactionType.UPDATE,
+                        newValue: cellNewValue
+                    },
+                    originalValue: rowValue
                 });
             } else {
                 grid.data[rowIndex][column.field] = args.newValue;

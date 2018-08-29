@@ -3,54 +3,63 @@ import { IgxTransactionService, Transaction, TransactionType } from './../transa
 export interface RowTransactionState {
     type: TransactionType;
     rowID: any;
-    cells: {};
+    value: {};
+    originalValue: {};
+}
+
+export interface GridTransaction {
+    transaction: Transaction;
+    originalValue: {};
 }
 
 export class IgxGridTransactionService extends IgxTransactionService {
-    private _gridTransactions: Map<any, RowTransactionState> = new Map();
+    private _gridState: Map<any, RowTransactionState> = new Map();
 
-    public add(transaction: Transaction) {
-        let rowID;
+    public addGridTransaction(gridTransaction: GridTransaction) {
+        const transaction = gridTransaction.transaction;
         super.add(transaction);
 
         switch (transaction.type) {
             case TransactionType.UPDATE:
-                rowID = transaction.id.rowID;
-                if (!this._gridTransactions.has(transaction.id.rowID)) {
-                    this._gridTransactions.set(transaction.id.rowID, { type: transaction.type, rowID: rowID, cells: {} });
+                if (!this._gridState.has(transaction.id)) {
+                    this._gridState.set(
+                        transaction.id,
+                        { type: transaction.type, rowID: transaction.id, value: {}, originalValue: gridTransaction.originalValue });
                 }
 
-                const rowTransactionState = this._gridTransactions.get(rowID);
+                const rowTransactionState = this._gridState.get(transaction.id);
                 if (rowTransactionState.type !== TransactionType.DELETE) {
-                    this._gridTransactions.get(rowID).cells[transaction.context.column.field] = transaction.newValue;
+                    Object.assign(this._gridState.get(transaction.id).value, transaction.newValue);
                 }
                 break;
             case TransactionType.DELETE:
-                this._gridTransactions.set(transaction.id, {type: transaction.type, rowID: transaction.id, cells: null});
+                this._gridState.set(
+                    transaction.id,
+                    { type: transaction.type, rowID: transaction.id, value: null, originalValue: gridTransaction.originalValue });
                 break;
         }
     }
 
     public getRowTransactionStateByID(id: string): RowTransactionState {
-        return this._gridTransactions.get(id);
+        return this._gridState.get(id);
     }
 
     public getRowTransactionStates(): Map<any, RowTransactionState> {
-        return this._gridTransactions;
+        return this._gridState;
     }
 
     public delete(id) {
-        const transaction = super.get(id);
-        if (transaction) {
-            const rowTransactionState = this.getRowTransactionStateByID(transaction.id);
-            rowTransactionState.cells[transaction.context.column.field] = transaction.oldValue;
-        }
+        // const transaction = super.get(id);
+        // if (transaction) {
+        //     const rowTransactionState = this.getRowTransactionStateByID(transaction.id);
+        //     rowTransactionState.value[transaction.context.column.field] = transaction.oldValue;
+        // }
 
-        super.delete(id);
+        // super.delete(id);
     }
 
     public reset() {
         super.reset();
-        this._gridTransactions = new Map();
+        this._gridState = new Map();
     }
 }

@@ -8,10 +8,8 @@ export enum TransactionType {
 
 export interface Transaction {
     id: any;
-    context: any;
     type: TransactionType;
     newValue: any;
-    oldValue: any;
 }
 
 export class IgxTransactionService {
@@ -35,7 +33,6 @@ export class IgxTransactionService {
 
     public delete(id) {
         const index = this._transactions.length - [...this._transactions].reverse().findIndex(t => t.id === id) - 1;
-    // this._transactions = [...this._transactions.slice(0, index), ...this._transactions.slice(index + 1, this._transactions.length - 1)];
         this._transactions = this._transactions.splice(index, 1);
     }
 

@@ -15,24 +15,24 @@ fdescribe('Transactions', () => {
             const trans = new IgxTransactionService();
             expect(trans).toBeDefined();
             let state: Transaction = { id: '1', type: TransactionType.UPDATE, oldValue: 0, newValue: 1 };
-            trans.add(state);
+            trans.addGridTransaction(state);
             expect(trans.get('1')).toEqual(state);
 
             state = { id: '1', type: TransactionType.UPDATE, oldValue: 1, newValue: 2 };
-            trans.add(state);
+            trans.addGridTransaction(state);
             expect(trans.get('1')).toEqual(state);
 
             state = { id: '3', type: TransactionType.UPDATE, oldValue: 1, newValue: 2 };
-            trans.add(state);
+            trans.addGridTransaction(state);
 
             state = { id: '3', type: TransactionType.UPDATE, oldValue: 2, newValue: 10 };
-            trans.add(state);
+            trans.addGridTransaction(state);
 
             state = { id: '3', type: TransactionType.UPDATE, oldValue: 10, newValue: 20 };
-            trans.add(state);
+            trans.addGridTransaction(state);
 
             state = { id: '1', type: TransactionType.UPDATE, oldValue: 2, newValue: 20 };
-            trans.add(state);
+            trans.addGridTransaction(state);
             expect(trans.get('1')).toEqual(state);
             expect(trans.get('3')).toEqual({ id: '3', type: TransactionType.UPDATE, oldValue: 10, newValue: 20 });
 

@@ -2618,12 +2618,14 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
                 }
                 this.onRowDeleted.emit({ data: this.data[index] });
                 if (this.transactions) {
-                    this.gridTransactions.add({
-                        id: rowSelector,
-                        context: this.getRowByIndex(index),
-                        type: TransactionType.DELETE,
-                        newValue: null,
-                        oldValue: this.data[index]
+                    this.gridTransactions.addGridTransaction({
+                        transaction:
+                        {
+                            id: rowSelector,
+                            type: TransactionType.DELETE,
+                            newValue: null
+                        },
+                        originalValue: this.data[index]
                     });
                 } else {
                     this.data.splice(index, 1);
@@ -4471,13 +4473,13 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
                 const rowIndex = this.getRowByKey(rowId).index;
                 switch (rowTransactionState.type) {
                     case TransactionType.UPDATE:
-                        this.data[rowIndex] = Object.assign({}, this.data[rowIndex], rowTransactionState.cells);
+                        this.data[rowIndex] = Object.assign({}, rowTransactionState.originalValue, rowTransactionState.value);
                         break;
                     case TransactionType.DELETE:
                         deleted.push(rowIndex);
                 }
             });
-            deleted.sort().reverse().forEach(i => this.data.slice(i, 1));
+            deleted.sort().reverse().forEach(i => this.data.splice(i, 1));
     }
 
         this.gridTransactions.reset();
