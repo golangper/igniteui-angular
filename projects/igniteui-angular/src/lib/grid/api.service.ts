@@ -11,7 +11,7 @@ import { IgxColumnComponent } from './column.component';
 import { IGridEditEventArgs, IgxGridComponent } from './grid.component';
 import { IgxGridRowComponent } from './row.component';
 import { IFilteringOperation, FilteringExpressionsTree, IFilteringExpressionsTree } from '../../public_api';
-import { IgxTransactionService, TransactionType } from './../services/transactions/transaction';
+import { IgxTransactionBaseService, TransactionType } from '../services/transactions/transaction-base';
 import { IgxGridTransactionService } from './../services/transactions/grid-transactions/grid-transactions';
 /**
  *@hidden
@@ -197,7 +197,7 @@ export class IgxGridAPIService {
                 const cellNewValue = {};
                 cellNewValue[columnField] = editValue;
                 grid.gridTransactions.addGridTransaction({
-                    transaction:
+                    change:
                     {
                         id: editableCell.cellID.rowID,
                         type: TransactionType.UPDATE,

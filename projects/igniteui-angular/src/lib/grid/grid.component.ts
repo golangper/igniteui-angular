@@ -52,7 +52,7 @@ import { IgxGridRowComponent } from './row.component';
 import { DataUtil, IFilteringOperation, IFilteringExpressionsTree, FilteringExpressionsTree } from '../../public_api';
 import { IgxGridHeaderComponent } from './grid-header.component';
 import { IgxOverlayOutletDirective } from '../directives/toggle/toggle.directive';
-import { IgxTransactionService, TransactionType } from './../services/transactions/transaction';
+import { IgxTransactionBaseService, TransactionType } from '../services/transactions/transaction-base';
 import { IgxGridTransactionService, RowTransactionState } from './../services/transactions/grid-transactions/grid-transactions';
 
 let NEXT_ID = 0;
@@ -1952,7 +1952,7 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
         private differs: IterableDiffers,
         private viewRef: ViewContainerRef,
         @Inject(IgxGridTransactionService) public gridTransactions: IgxGridTransactionService,
-        @Inject(IgxTransactionService) public transactionsService: IgxTransactionService) {
+        @Inject(IgxTransactionBaseService) public transactionsService: IgxTransactionBaseService) {
 
         this.resizeHandler = () => {
             this.calculateGridSizes();
@@ -2619,7 +2619,7 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
                 this.onRowDeleted.emit({ data: this.data[index] });
                 if (this.transactions) {
                     this.gridTransactions.addGridTransaction({
-                        transaction:
+                        change:
                         {
                             id: rowSelector,
                             type: TransactionType.DELETE,
@@ -4466,23 +4466,7 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
             return;
         }
 
-        const rowTransactionStates = this.gridTransactions.getRowTransactionStates();
-        if (rowTransactionStates) {
-            const deleted = [];
-            rowTransactionStates.forEach(( rowTransactionState: RowTransactionState, rowId) => {
-                const rowIndex = this.getRowByKey(rowId).index;
-                switch (rowTransactionState.type) {
-                    case TransactionType.UPDATE:
-                        this.data[rowIndex] = Object.assign({}, rowTransactionState.originalValue, rowTransactionState.value);
-                        break;
-                    case TransactionType.DELETE:
-                        deleted.push(rowIndex);
-                }
-            });
-            deleted.sort().reverse().forEach(i => this.data.splice(i, 1));
-    }
-
-        this.gridTransactions.reset();
+        this.gridTransactions.UpdateData(this.data);
         this.cdr.markForCheck();
     }
 }
