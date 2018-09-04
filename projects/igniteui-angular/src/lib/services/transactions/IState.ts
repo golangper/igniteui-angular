@@ -1,7 +1,7 @@
 import { ChangeType } from './IChange';
 
 export interface IState {
-    id: any;
+    value: any;
+    originalValue: any;
     type: ChangeType;
-    value: {};
 }

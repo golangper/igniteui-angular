@@ -1,8 +1,9 @@
-import { IgxTransactionBaseService, TransactionType, IChange } from './transaction-base';
+import { IgxTransactionBaseService } from './transaction-base';
 
-import { async, TestBed, ComponentFixture, tick, fakeAsync, flush } from '@angular/core/testing';
+import { async, TestBed, fakeAsync } from '@angular/core/testing';
+import { IChange, ChangeType } from './IChange';
 
-fdescribe('Transactions', () => {
+describe('Transactions', () => {
     beforeEach(async(() => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
@@ -10,42 +11,54 @@ fdescribe('Transactions', () => {
         }).compileComponents();
     }));
 
-    describe('General provider: ', () => {
-        it('API', fakeAsync(() => {
+    describe('IgxTransactionBaseService UNIT TESTS: ', () => {
+        fit('Add ADD type change - all possible paths', fakeAsync(() => {
             const trans = new IgxTransactionBaseService();
             expect(trans).toBeDefined();
-            let state: IChange = { id: '1', type: TransactionType.UPDATE, oldValue: 0, newValue: 1 };
-            trans.addGridTransaction(state);
-            expect(trans.get('1')).toEqual(state);
 
-            state = { id: '1', type: TransactionType.UPDATE, oldValue: 1, newValue: 2 };
-            trans.addGridTransaction(state);
-            expect(trans.get('1')).toEqual(state);
+            const change: IChange = { id: '1', type: ChangeType.ADD, newValue: 1 };
+            trans.add(change);
+            expect(trans.get('1')).toEqual(change);
+            expect(trans.getAll()).toEqual([change]);
+            expect(trans.currentState().get(change.id)).toEqual({ value: change.newValue, originalValue: null, type: change.type });
+        }));
+        xit('API', fakeAsync(() => {
+            const trans = new IgxTransactionBaseService();
+            expect(trans).toBeDefined();
 
-            state = { id: '3', type: TransactionType.UPDATE, oldValue: 1, newValue: 2 };
-            trans.addGridTransaction(state);
+            let change: IChange = { id: '1', type: ChangeType.UPDATE, newValue: 1 };
+            trans.add(change);
+            expect(trans.get('1')).toEqual(change);
 
-            state = { id: '3', type: TransactionType.UPDATE, oldValue: 2, newValue: 10 };
-            trans.addGridTransaction(state);
+            change = { id: '1', type: ChangeType.UPDATE, newValue: 2 };
+            trans.add(change);
+            expect(trans.get('1')).toEqual(change);
 
-            state = { id: '3', type: TransactionType.UPDATE, oldValue: 10, newValue: 20 };
-            trans.addGridTransaction(state);
+            change = { id: '3', type: ChangeType.UPDATE, newValue: 2 };
+            trans.add(change);
 
-            state = { id: '1', type: TransactionType.UPDATE, oldValue: 2, newValue: 20 };
-            trans.addGridTransaction(state);
-            expect(trans.get('1')).toEqual(state);
-            expect(trans.get('3')).toEqual({ id: '3', type: TransactionType.UPDATE, oldValue: 10, newValue: 20 });
+            change = { id: '3', type: ChangeType.UPDATE, newValue: 10 };
+            trans.add(change);
 
-            trans.delete('1');
-            expect(trans.get('1')).toEqual({ id: '1', type: TransactionType.UPDATE, oldValue: 1, newValue: 2 });
-            trans.delete('3');
-            expect(trans.get('3')).toEqual({ id: '3', type: TransactionType.UPDATE, oldValue: 2, newValue: 10 });
+            change = { id: '3', type: ChangeType.UPDATE, newValue: 20 };
+            trans.add(change);
 
-            expect(trans.length).toEqual(4);
-            expect(trans.get()[3]).toEqual({ id: '3', type: TransactionType.UPDATE, oldValue: 2, newValue: 10 });
+            change = { id: '1', type: ChangeType.UPDATE, newValue: 20 };
+            trans.add(change);
 
+            expect(trans.get('1')).toEqual(change);
+            expect(trans.get('3')).toEqual({ id: '3', type: ChangeType.UPDATE, newValue: 20 });
+            // const state = trans.currentState();
+            // expect(state).toEqual([
+            //     { type: ChangeType.UPDATE, value: 20 },
+            //     { type: ChangeType.UPDATE, value: 20 }
+            // ]);
+
+            const data = [0, 10, 20, 30, 40, 50, 60];
+
+            trans.update(data);
             trans.reset();
-            expect(trans.isEmpty).toBeTruthy();
+            expect(trans.getAll().length).toBe(0);
         }));
     });
 });

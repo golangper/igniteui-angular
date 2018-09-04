@@ -21,6 +21,7 @@ import { IgxGridAPIService } from './api.service';
 import { IgxGridCellComponent } from './cell.component';
 import { IgxColumnComponent } from './column.component';
 import { IgxGridComponent, IRowSelectionEventArgs } from './grid.component';
+import { ChangeType } from '../services/transactions/IChange';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,6 +32,8 @@ import { IgxGridComponent, IRowSelectionEventArgs } from './grid.component';
 export class IgxGridRowComponent implements DoCheck {
     private _rowData: any;
 
+    @HostBinding('style.text-decoration.line-through')
+    public lineThrough: boolean;
     /**
      *  The data passed to the row component.
      *
@@ -43,6 +46,7 @@ export class IgxGridRowComponent implements DoCheck {
         if (this.grid.primaryKey && this.grid.transactions) {
             const rowTransactionState = this.grid.gridTransactions.getRowTransactionStateByID(this.rowID);
             if (rowTransactionState) {
+                this.lineThrough = rowTransactionState.type === ChangeType.DELETE;
                 return Object.assign({}, this._rowData, rowTransactionState.value);
             }
         }

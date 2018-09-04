@@ -52,8 +52,9 @@ import { IgxGridRowComponent } from './row.component';
 import { DataUtil, IFilteringOperation, IFilteringExpressionsTree, FilteringExpressionsTree } from '../../public_api';
 import { IgxGridHeaderComponent } from './grid-header.component';
 import { IgxOverlayOutletDirective } from '../directives/toggle/toggle.directive';
-import { IgxTransactionBaseService, TransactionType } from '../services/transactions/transaction-base';
+import { IgxTransactionBaseService } from '../services/transactions/transaction-base';
 import { IgxGridTransactionService, RowTransactionState } from './../services/transactions/grid-transactions/grid-transactions';
+import { ChangeType } from '../services/transactions/IChange';
 
 let NEXT_ID = 0;
 const DEBOUNCE_TIME = 16;
@@ -2622,7 +2623,7 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
                         change:
                         {
                             id: rowSelector,
-                            type: TransactionType.DELETE,
+                            type: ChangeType.DELETE,
                             newValue: null
                         },
                         originalValue: this.data[index]
