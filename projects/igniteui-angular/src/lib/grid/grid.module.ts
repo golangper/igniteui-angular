@@ -38,7 +38,7 @@ import {
     IgxDecimalPipeComponent,
     IgxDatePipeComponent
 } from './grid.common';
-import { IgxGridComponent, IgxGridTransaction } from './grid.component';
+import { IgxGridComponent, IgxGridTransaction, IgxGridRowEditing } from './grid.component';
 import {
     IgxGridFilterConditionPipe,
     IgxGridFilteringPipe,
@@ -57,6 +57,7 @@ import { IgxButtonGroupModule } from '../buttonGroup/buttonGroup.component';
 import { IgxColumnPinningModule } from './column-pinning.component';
 import { IgxTransactionService } from '../services';
 import { IgxNoOpTransactionService } from '../services/transaction/noop-transaction';
+import { IgxNoRowEditingService } from '../services/row-editing/no.row.editing.base';
 
 @NgModule({
     declarations: [
@@ -141,7 +142,8 @@ import { IgxNoOpTransactionService } from '../services/transaction/noop-transact
     providers: [
         IgxGridAPIService,
         IgxSelectionAPIService,
-        { provide: IgxGridTransaction, useClass: IgxNoOpTransactionService }]
+        { provide: IgxGridTransaction, useClass: IgxNoOpTransactionService },
+        { provide: IgxGridRowEditing, useClass: IgxNoRowEditingService }]
 })
 export class IgxGridModule {
     public static forRoot() {

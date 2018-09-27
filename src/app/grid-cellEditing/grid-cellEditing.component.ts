@@ -4,10 +4,13 @@ import { data, dataWithoutPK } from './data';
 import {
     IgxGridComponent, IgxButtonGroupComponent, IgxNoOpTransactionService, IgxTransactionService
 } from 'igniteui-angular';
+import { IgxGridRowEditing } from '../../../projects/igniteui-angular/src/lib/grid/grid.component';
+import { RowEditingService } from '../../../projects/igniteui-angular/src/lib/services/row-editing/row.editing';
 
 @Component({
     selector: 'app-grid-cellediting',
-    templateUrl: 'grid-cellEditing.component.html'
+    templateUrl: 'grid-cellEditing.component.html',
+    providers: [{ provide: IgxGridRowEditing, useClass: RowEditingService }]
 })
 export class GridCellEditingComponent {
 

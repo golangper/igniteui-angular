@@ -62,6 +62,7 @@ const DEBOUNCE_TIME = 16;
 const MINIMUM_COLUMN_WIDTH = 136;
 
 export const IgxGridTransaction = new InjectionToken<string>('IgxGridTransaction');
+export const IgxGridRowEditing = new InjectionToken<string>('IgxGridRowEditing');
 
 export interface IGridCellEventArgs {
     cell: IgxGridCellComponent;
@@ -984,7 +985,7 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
     //  * ```html
     //  * <igx-grid #grid [data]="localData" (onRowUpdated)="rowUpdated($event)" [height]="'305px'" [autoGenerate]="true"></igx-grid>
     //  * ```
-	//  * @memberof IgxGridComponent
+    //  * @memberof IgxGridComponent
     //  */
     // @Output()
     // public onRowUpdated = new EventEmitter<IRowUpdateDataEventArgs>();
@@ -1464,8 +1465,8 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
     @ViewChild(IgxOverlayOutletDirective, { read: IgxOverlayOutletDirective })
     public outletDirective: IgxOverlayOutletDirective;
 
-    // @ViewChild(IgxToggleDirective)
-    // public rowEditingOverlay: IgxToggleDirective;
+    @ViewChild(IgxToggleDirective)
+    public rowEditingOverlay: IgxToggleDirective;
 
     /**
      * @hidden
@@ -2095,6 +2096,7 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
         private gridAPI: IgxGridAPIService,
         public selection: IgxSelectionAPIService,
         @Inject(IgxGridTransaction) private _transactions: IgxTransactionService,
+        @Inject(IgxGridRowEditing) private _rowEditingState: IgxTransactionService,
         private elementRef: ElementRef,
         private zone: NgZone,
         @Inject(DOCUMENT) public document,
@@ -4677,27 +4679,27 @@ export class IgxGridComponent implements OnInit, OnDestroy, AfterContentInit, Af
     }
 
     public openRowEditingOverlay(row: IgxGridRowComponent) {
-        // this.closeRowEditingOverlay();
-        // const overlaySettings: OverlaySettings = {
-        //     scrollStrategy: new AbsoluteScrollStrategy(),
-        //     modal: false,
-        //     closeOnOutsideClick: false,
-        //     outlet: this.outletDirective,
-        //     positionStrategy: new ConnectedPositioningStrategy({
-        //         target: row.element.nativeElement,
-        //         horizontalDirection: HorizontalAlignment.Left,
-        //         verticalDirection: VerticalAlignment.Bottom,
-        //         horizontalStartPoint: HorizontalAlignment.Right,
-        //         verticalStartPoint: VerticalAlignment.Bottom,
-        //         openAnimation: null,
-        //         closeAnimation: null
-        //     })
-        // };
-        // this.rowEditingOverlay.open(overlaySettings);
+        this.closeRowEditingOverlay();
+        const overlaySettings: OverlaySettings = {
+            scrollStrategy: new AbsoluteScrollStrategy(),
+            modal: false,
+            closeOnOutsideClick: false,
+            outlet: this.outletDirective,
+            positionStrategy: new ConnectedPositioningStrategy({
+                target: row.element.nativeElement,
+                horizontalDirection: HorizontalAlignment.Left,
+                verticalDirection: VerticalAlignment.Bottom,
+                horizontalStartPoint: HorizontalAlignment.Right,
+                verticalStartPoint: VerticalAlignment.Bottom,
+                openAnimation: null,
+                closeAnimation: null
+            })
+        };
+        this.rowEditingOverlay.open(overlaySettings);
     }
 
     public closeRowEditingOverlay() {
-        // this.rowEditingOverlay.close();
+        this.rowEditingOverlay.close();
     }
 
     public onUpdateRowTransaction(ev) {
