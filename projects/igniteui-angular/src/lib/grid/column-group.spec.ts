@@ -980,24 +980,23 @@ describe('IgxGrid - multi-column headers', () => {
         // Verify columns and groups
         testGroupsAndColumns(18, 11);
 
-        grid.getColumnByName('ContactTitle').sortable = true;
-        grid.getColumnByName('Fax').sortable = true;
+        grid.getColumnByName('CompanyName').sortable = true;
+        grid.getColumnByName('ContactName').sortable = true;
         fixture.detectChanges();
-
         // Sort column
-        grid.sort({fieldName: 'ContactTitle', dir: SortingDirection.Asc});
+        grid.sort({fieldName: 'CompanyName', dir: SortingDirection.Asc});
         fixture.detectChanges();
 
         // Verify columns and groups
         testGroupsAndColumns(18, 11);
 
         // Verify cells
-        expect(grid.getCellByColumn(0, 'ID').value).toEqual('BOTTM');
-        expect(grid.getCellByColumn(0, 'ContactTitle').value).toEqual('Accounting Manager');
-        expect(grid.getCellByColumn(0, 'CompanyName').value).toEqual('Bottom-Dollar Markets');
-        expect(grid.getCellByColumn(4, 'ID').value).toEqual('FRANR');
-        expect(grid.getCellByColumn(4, 'ContactTitle').value).toEqual('Marketing Manager');
-        expect(grid.getCellByColumn(4, 'Country').value).toEqual('France');
+        expect(grid.getCellByColumn(0, 'ID').value).toEqual('ALFKI');
+        expect(grid.getCellByColumn(0, 'ContactTitle').value).toEqual('Sales Representative');
+        expect(grid.getCellByColumn(0, 'CompanyName').value).toEqual('Alfreds Futterkiste');
+        expect(grid.getCellByColumn(4, 'ID').value).toEqual('BSBEV');
+        expect(grid.getCellByColumn(4, 'ContactTitle').value).toEqual('Sales Representative');
+        expect(grid.getCellByColumn(4, 'Country').value).toEqual('UK');
 
         grid.clearSort();
         fixture.detectChanges();
@@ -1012,16 +1011,16 @@ describe('IgxGrid - multi-column headers', () => {
         expect(grid.getCellByColumn(4, 'Country').value).toEqual('Sweden');
 
         // sort column which is not in the view
-        grid.sort({fieldName: 'Fax', dir: SortingDirection.Asc});
+        grid.sort({fieldName: 'ContactName', dir: SortingDirection.Asc});
         fixture.detectChanges();
 
         // Verify columns and groups
         testGroupsAndColumns(18, 11);
 
         // Verify cells
-        expect(grid.getCellByColumn(0, 'ID').value).toEqual('CHOPS');
+        expect(grid.getCellByColumn(0, 'ID').value).toEqual('ANATR');
         expect(grid.getCellByColumn(0, 'ContactTitle').value).toEqual('Owner');
-        expect(grid.getCellByColumn(0, 'CompanyName').value).toEqual('Chop-suey Chinese');
+        expect(grid.getCellByColumn(0, 'CompanyName').value).toEqual('Ana Trujillo Emparedados y helados');
         expect(grid.getCellByColumn(3, 'ID').value).toEqual('FAMIA');
         expect(grid.getCellByColumn(3, 'ContactTitle').value).toEqual('Marketing Assistant');
         expect(grid.getCellByColumn(3, 'Country').value).toEqual('Brazil');
@@ -1035,7 +1034,7 @@ describe('IgxGrid - multi-column headers', () => {
         // Verify columns and groups
         testGroupsAndColumns(18, 11);
 
-        grid.getColumnByName('ContactTitle').sortable = true;
+        grid.getColumnByName('CompanyName').sortable = true;
         fixture.detectChanges();
 
         // Sort column by clicking on it
@@ -1046,19 +1045,19 @@ describe('IgxGrid - multi-column headers', () => {
         // Verify columns and groups
         testGroupsAndColumns(18, 11);
         // Verify cells
-        expect(grid.getCellByColumn(0, 'ID').value).toEqual('BOTTM');
-        expect(grid.getCellByColumn(0, 'ContactTitle').value).toEqual('Accounting Manager');
-        expect(grid.getCellByColumn(0, 'CompanyName').value).toEqual('Bottom-Dollar Markets');
-        expect(grid.getCellByColumn(4, 'ID').value).toEqual('FRANR');
-        expect(grid.getCellByColumn(4, 'ContactTitle').value).toEqual('Marketing Manager');
-        expect(grid.getCellByColumn(4, 'Country').value).toEqual('France');
+        expect(grid.getCellByColumn(0, 'ID').value).toEqual('ALFKI');
+        expect(grid.getCellByColumn(0, 'ContactTitle').value).toEqual('Sales Representative');
+        expect(grid.getCellByColumn(0, 'CompanyName').value).toEqual('Alfreds Futterkiste');
+        expect(grid.getCellByColumn(4, 'ID').value).toEqual('BERGS');
+        expect(grid.getCellByColumn(4, 'ContactTitle').value).toEqual('Order Administrator');
+        expect(grid.getCellByColumn(4, 'Country').value).toEqual('Sweden');
     });
 
     it('filtering - filter a grouped column', () => {
         const fixture = TestBed.createComponent(ColumnGroupFourLevelTestComponent);
         fixture.detectChanges();
         const grid = fixture.componentInstance.grid;
-
+        const initialRowListLenght = grid.rowList.length;
         // Verify columns and groups
         testGroupsAndColumns(18, 11);
 
@@ -1085,7 +1084,7 @@ describe('IgxGrid - multi-column headers', () => {
         grid.clearFilter('PostalCode');
         fixture.detectChanges();
 
-        expect(grid.rowList.length).toEqual(8);
+        expect(grid.rowList.length).toEqual(initialRowListLenght);
         // Verify columns and groups
         testGroupsAndColumns(18, 11);
 
@@ -1100,7 +1099,7 @@ describe('IgxGrid - multi-column headers', () => {
         grid.clearFilter('ContactTitle');
         fixture.detectChanges();
 
-        expect(grid.rowList.length).toEqual(8);
+        expect(grid.rowList.length).toEqual(initialRowListLenght);
         // Verify columns and groups
         testGroupsAndColumns(18, 11);
     });
@@ -1231,7 +1230,7 @@ describe('IgxGrid - multi-column headers', () => {
         NestedColGroupsTests.testHeadersRendering(fixture);
     });
 
-    it('Should render headers correctly when having nested column groups with huge header text.', fakeAsync(() => {
+    it('Should render headers correctly when having nested column groups with huge header text.', () => {
         const fixture = TestBed.createComponent(NestedColumnGroupsGridComponent);
         fixture.detectChanges();
         const ci = fixture.componentInstance;
@@ -1243,16 +1242,14 @@ describe('IgxGrid - multi-column headers', () => {
             ' leap into electronic typesetting, remaining essentially unchanged.It was popularised' +
             ' in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and' +
             ' more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.';
-
         ci.masterColGroupTitle = ci.firstSlaveColGroupTitle =
             ci.secondSlaveColGroupTitle = ci.addressColTitle = ci.phoneColTitle =
             ci.faxColTitle = ci.cityColTitle = title;
 
-        tick(50);
+        ci.grid.cdr.markForCheck();
         fixture.detectChanges();
-
         NestedColGroupsTests.testHeadersRendering(fixture);
-    }));
+    });
 
     it('Should emit "columnInit" event when having multi-column headers.', () => {
         const fixture = TestBed.createComponent(NestedColumnGroupsGridComponent);
