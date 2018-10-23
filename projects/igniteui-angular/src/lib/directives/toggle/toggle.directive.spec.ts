@@ -4,8 +4,7 @@ import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { IgxToggleActionDirective, IgxToggleDirective, IgxToggleModule, IgxOverlayOutletDirective } from './toggle.directive';
 import { IgxOverlayService, OverlaySettings, ConnectedPositioningStrategy,
-    AbsoluteScrollStrategy, AutoPositionStrategy } from '../../services';
-import { IPositionStrategy } from 'dist/igniteui-angular/public_api';
+    AbsoluteScrollStrategy, AutoPositionStrategy, IPositionStrategy } from '../../services';
 
 describe('IgxToggle', () => {
     const HIDDEN_TOGGLER_CLASS = 'igx-toggle--hidden';
